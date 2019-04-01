@@ -183,3 +183,12 @@ let m = Meta.@lower 1 + 1
     ir = @test_nowarn Core.Compiler.getfield_elim_pass!(ir, domtree)
     @test Core.Compiler.verify_ir(ir) === nothing
 end
+
+# Issue #31546 - missing widenconst in SROA
+function f_31546(x)
+    (a, b) = x == "r"  ? (false, false) :
+             x == "r+" ? (true, false) :
+             x == "w"  ? (true, true) : error()
+    return a, b
+end
+@test f_31546("w") == (true, true)
